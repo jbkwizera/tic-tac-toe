@@ -1,19 +1,19 @@
 import copy
 import re
-def next_positions(board, player):
-    next = []
+def get_next_positions(board, player):
+    next_positions = []
     for i in range(3):
         for j in range(3):
             if board[i][j] == '-':
                 temp = copy.deepcopy(board)
                 temp[i][j] = player
-                next.append(temp)
-    return next
+                next_positions.append(temp)
+    return next_positions
 
 def show_board(board):
     for i in range(3):
         for j in range(3):
-            print(board[i][j] if board[i][j] else '-', end=' ')
+            print(board[i][j], end=' ')
         print()
 
 def game_over(board):
@@ -35,8 +35,10 @@ def game_over(board):
         board[2][0] == board[1][1] == board[0][2]) and board[1][1] != '-':
         return board[1][1]
 
+    # game is drawn
     if draw: return 'd'
 
+    # game is not over
     return False
 
 def evaluate(board, player):
@@ -46,55 +48,72 @@ def evaluate(board, player):
         if result == 'o': return -1
         return 0
     elif player == 'x':
-        return max(evaluate(position, 'o') for position in next_positions(board, 'x'))
+        return max(evaluate(pos, 'o') for pos in get_next_positions(board, 'x'))
     else:
-        return min(evaluate(position, 'x') for position in next_positions(board, 'o'))
+        return min(evaluate(pos, 'x') for pos in get_next_positions(board, 'o'))
 
-def make_move(board):
-    next   = next_positions(board, 'x')
-    values = [evaluate(position, 'o') for position in next]
-    best_next_position = max(zip(values, next))[1]
-    return best_next_position
+def make_computer_move(board):
+    print('Computer\'s turn: ')
+    next_positions = get_next_positions(board, 'x')
+    pos_evaluation = [evaluate(pos, 'o') for pos in next_positions]
+    best_move_position = max(zip(pos_evaluation, next_positions))[1]
+    return best_move_position
 
-def play(board):
-    print('Computer is x')
-    player  = '-'
-    request = 'Please choose first player (x/o): '
-    while player != 'x' and player != 'o':
-        player = input(request).strip().lower()
-        if player != 'x' and player != 'o':
-            request = 'Please choose either x or o: '
-
+def make_human_move(board):
+    msg  = 'Your turn: '
     while True:
-        result = game_over(board)
-        if result:
-            if result == 'x':
-                print('Computer won!')
-            elif result == 'o':
-                print('You won! (Good luck with that!)')
-            else:
-                print('Draw! (That\'s an achievement!)')
-            break
+        move = input(msg)
+        try:
+            i, j = [int(coord) for coord in list(move.strip())]
+        except ValueError:
+            msg = 'Please enter move as ij (ex: 00): '
         else:
-            if player == 'x':
-                print('Computer\'s turn')
-                board = make_move(board)
-                show_board(board)
-                print('-' * 10)
-                player = 'o'
+            if i < 0 or i >= 3 or j < 0 or j >= 3:
+                msg = 'Please enter a correct cell: '
+            elif board[i][j] != '-':
+                msg = 'Please enter an unoccupied cell: '
             else:
-                move = input('Your turn. enter location in the matrix: ')
-                i, j = [int(coord) for coord in re.split('', move.strip()) if coord]
                 board[i][j] = 'o'
-                show_board(board)
-                print('-' * 10)
-                player = 'x'
+                return board
+
+def choose_first_mover():
+    msg = 'Please choose first player (x/o): '
+    player = '-'
+    while player != 'x' and player != 'o':
+        player = input(msg).strip().lower()
+        if player != 'x' and player != 'o':
+            msg = 'Please choose either x or o: '
+    return player
+
+def play_game(board=[['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]):
+    print('Computer is x')
+    player = choose_first_mover()
+    result = game_over(board)
+    while not result:
+        if player == 'x':
+            board = make_computer_move(board)
+            show_board(board)
+            print('-' * 16)
+            player = 'o'
+        else:
+            board = make_human_move(board)
+            show_board(board)
+            print('-' * 16)
+            player = 'x'
+        result = game_over(board)
+
+    # show game result
+    if result == 'x':
+        print('Computer won!')
+    elif result == 'o':
+        print('You won! (Good luck with that!)')
+    elif result == 'd':
+        print('Game drawn!')
 
 
 if __name__ == '__main__':
     board = [
-        ['-', '-', '-'],
-        ['-', '-', '-'],
-        ['-', '-', '-']]
-
-    play(board)
+        ['x', '-', '-'],
+        ['-', 'o', '-'],
+        ['-', 'x', '-']]
+    play_game()
