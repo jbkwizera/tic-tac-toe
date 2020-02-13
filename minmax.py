@@ -1,5 +1,6 @@
 from board_utils import *
 
+#--------------------------minmax implementation--------------------------------
 def evaluate(board, player):
     result = game_over(board)
     if result:
@@ -12,6 +13,7 @@ def evaluate(board, player):
         return min(evaluate(pos, 'x') for pos in get_next_positions(board, 'o'))
 
 def evaluate_ab(board, player, a, b):
+    from board_utils import game_over, get_next_positions
     result = game_over(board)
     if result:
         if result == 'x': return +1
