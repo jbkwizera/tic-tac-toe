@@ -17,12 +17,12 @@ def play(board):
         if player == 'x':
             board = make_computer_move(board)
             show_board(board)
-            print('-' * 16)
+            print()
             player = 'o'
         else:
             board = make_human_move(board)
             show_board(board)
-            print('-' * 16)
+            print()
             player = 'x'
         result = game_over(board)
 

@@ -14,13 +14,15 @@ def get_next_positions(board, player):
     return next_positions
 
 def show_board(board):
-    for i in range(3):
-        for j in range(3):
-            print(board[i][j], end=' ')
-        print()
+    print('{:^3s}|{:^3s}|{:^3s}'.format(board[0][0], board[0][1], board[0][2]))
+    print('---|---|---')
+    print('{:^3s}|{:^3s}|{:^3s}'.format(board[1][0], board[1][1], board[1][2]))
+    print('---|---|---')
+    print('{:^3s}|{:^3s}|{:^3s}'.format(board[2][0], board[2][1], board[2][2]))
 
 #---------------------utility functions ----------------------------------------
 def make_computer_move(board, player='x'):
+    print('Computer\'s turn')
     next_positions = get_next_positions(board, player)
     if player == 'x':
         pos_evaluation = [evaluate_ab(pos, 'o', -10, +10) for pos in next_positions]
