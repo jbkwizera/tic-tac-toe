@@ -1,5 +1,8 @@
 import copy
+import random
+from minmax import *
 
+#-----------------------board functions ----------------------------------------
 def get_next_positions(board, player):
     next_positions = []
     for i in range(3):
@@ -16,13 +19,15 @@ def show_board(board):
             print(board[i][j], end=' ')
         print()
 
-def make_computer_move(board):
-    from minmax import evaluate_ab
-
-    print('Computer\'s turn: ')
-    next_positions = get_next_positions(board, 'x')
-    pos_evaluation = [evaluate_ab(pos, 'o', -10, +10) for pos in next_positions]
-    best_move_position = max(zip(pos_evaluation, next_positions))[1]
+#---------------------utility functions ----------------------------------------
+def make_computer_move(board, player='x'):
+    next_positions = get_next_positions(board, player)
+    if player == 'x':
+        pos_evaluation = [evaluate_ab(pos, 'o', -10, +10) for pos in next_positions]
+        best_move_position = max(zip(pos_evaluation, next_positions))[1]
+    else:
+        pos_evaluation = [evaluate_ab(pos, 'x', -10, +10) for pos in next_positions]
+        best_move_position = min(zip(pos_evaluation, next_positions))[1]
     return best_move_position
 
 def make_human_move(board):
@@ -41,6 +46,28 @@ def make_human_move(board):
             else:
                 board[i][j] = 'o'
                 return board
+
+def make_random_move(board, player='o'):
+    unoccupied_cells = []
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == '-':
+                unoccupied_cells.append((i, j))
+    i, j = random.choice(unoccupied_cells)
+    board[i][j] = 'o'
+    return board
+
+def choose_first_mover():
+    msg = 'Please choose first player (x/o): '
+    player = '-'
+    while player != 'x' and player != 'o':
+        player = input(msg).strip().lower()
+        if player != 'x' and player != 'o':
+            msg = 'Please choose either x or o: '
+    return player
+
+def choose_first_mover_random():
+    return 'x' if random.random() < 0.5 else 'o'
 
 def game_over(board):
     draw = True
