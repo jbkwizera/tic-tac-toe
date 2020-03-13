@@ -68,14 +68,15 @@ class GameUI(Game):
         for i in range(3):
             row_lbls = []
             for j in range(3):
-                cell_frm = tk.Frame(master=board_frm, height=72, width=72, relief=tk.RAISED, borderwidth=1, cursor="hand")
-                cell_lbl = tk.Label(master=cell_frm, text="")
+                cell_frm = tk.Frame(master=board_frm, height=120, width=120, relief=tk.RAISED, borderwidth=1, cursor="hand")
+                cell_lbl = tk.Label(master=cell_frm, height=120, width=120)
                 cell_lbl.message = 3*i + j              # cell id: 0...8
                 cell_lbl.bind("<Button-1>", self.play)  # play on click
                 cell_lbl.configure(font=moveFont)
-                cell_lbl.pack(ipadx=60, ipady=10)
+                cell_lbl.pack()
 
-                cell_frm.grid(row=i, column=j, padx=2, pady=2)
+                cell_frm.grid(row=i, column=j)
+                cell_frm.pack_propagate(0)
                 row_lbls.append(cell_lbl)
             self._cells_lbls.append(row_lbls)
 
